@@ -1,0 +1,84 @@
+<style>
+#tt{font-family:sans-serif;max-width:700px;margin:0 auto}
+.tt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tt-stat{background:#f3f4f6;border-radius:8px;padding:12px;text-align:center}
+.tt-stat b{display:block;font-size:22px;color:#111}
+.tt-stat span{font-size:12px;color:#6b7280}
+.tt-pb{background:#e5e7eb;border-radius:99px;height:8px;margin-bottom:16px}
+.tt-bar{height:8px;border-radius:99px;background:#1D9E75;width:0;transition:width .3s}
+.tt-dlabel{font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px}
+.tt-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tt-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.15s}
+.tt-card:hover{border-color:#aaa}
+.tt-card.done{background:#E1F5EE;border-color:#5DCAA5}
+.tt-num{width:28px;height:28px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.tt-card.done .tt-num{background:#1D9E75;color:#fff}
+.tt-en{font-size:13px;font-weight:500;color:#111;line-height:1.3}
+.tt-vn{font-size:11px;color:#6b7280}
+.tt-card.done .tt-en,.tt-card.done .tt-vn{color:#085041}
+.tt-reset{margin-top:14px;border:1px solid #e5e7eb;background:none;border-radius:8px;padding:7px 16px;font-size:13px;color:#6b7280;cursor:pointer}
+@media(max-width:480px){.tt-grid{grid-template-columns:1fr}}
+</style>
+
+<div id="tt">
+  <div class="tt-stats">
+    <div class="tt-stat"><b id="tt-d">0</b><span>Đã học</span></div>
+    <div class="tt-stat"><b id="tt-l">50</b><span>Còn lại</span></div>
+    <div class="tt-stat"><b id="tt-p">0%</b><span>Hoàn thành</span></div>
+  </div>
+  <div class="tt-pb"><div class="tt-bar" id="tt-bar"></div></div>
+  <div id="tt-body"></div>
+  <button class="tt-reset" onclick="ttReset()">↺ Đặt lại</button>
+</div>
+
+<script>
+var D=[
+  {d:"11/06",t:[[1,"Contracts","Hợp đồng"],[2,"Marketing","Tiếp thị"]]},
+  {d:"12/06",t:[[3,"Warranties","Bảo hành"],[4,"Business Planning","Kế hoạch kinh doanh"]]},
+  {d:"13/06",t:[[5,"Conferences","Hội nghị"],[6,"Computers","Máy tính"]]},
+  {d:"14/06",t:[[7,"Office Technology","Công nghệ văn phòng"],[8,"Office Procedures","Thủ tục văn phòng"]]},
+  {d:"15/06",t:[[9,"Electronics","Thiết bị điện tử"],[10,"Correspondence","Thư tín"]]},
+  {d:"16/06",t:[[11,"Job Advertising & Recruiting","Quảng cáo & tuyển dụng"],[12,"Applying & Interviewing","Nộp đơn & phỏng vấn"]]},
+  {d:"17/06",t:[[13,"Hiring & Training","Tuyển dụng & đào tạo"],[14,"Salaries & Benefits","Lương & phúc lợi"]]},
+  {d:"18/06",t:[[15,"Promotions, Pensions & Awards","Thăng chức & khen thưởng"],[16,"Shopping","Mua sắm"]]},
+  {d:"19/06",t:[[17,"Ordering Supplies","Đặt hàng vật tư"],[18,"Shipping","Vận chuyển"]]},
+  {d:"20/06",t:[[19,"Invoices","Hóa đơn"],[20,"Inventory","Hàng tồn kho"]]},
+  {d:"21/06",t:[[21,"Banking","Ngân hàng"],[22,"Accounting","Kế toán"]]},
+  {d:"22/06",t:[[23,"Investments","Đầu tư"],[24,"Taxes","Thuế"]]},
+  {d:"23/06",t:[[25,"Financial Statements","Báo cáo tài chính"],[26,"Property & Departments","Bất động sản & phòng ban"]]},
+  {d:"24/06",t:[[27,"Board Meetings & Committees","Họp hội đồng & ủy ban"],[28,"Quality Control","Kiểm soát chất lượng"]]},
+  {d:"25/06",t:[[29,"Product Development","Phát triển sản phẩm"],[30,"Renting & Leasing","Thuê & cho thuê"]]},
+  {d:"26/06",t:[[31,"Selecting a Restaurant","Lựa chọn nhà hàng"],[32,"Eating Out","Ăn ngoài"]]},
+  {d:"27/06",t:[[33,"Ordering Lunch","Gọi bữa trưa"],[34,"Cooking as a Career","Nghề đầu bếp"]]},
+  {d:"28/06",t:[[35,"Events","Sự kiện"],[36,"General Travel","Du lịch nói chung"]]},
+  {d:"29/06",t:[[37,"Airlines","Hàng không"],[38,"Trains","Tàu hỏa"]]},
+  {d:"30/06",t:[[39,"Hotels","Khách sạn"],[40,"Car Rentals","Thuê xe"]]},
+  {d:"01/07",t:[[41,"Movies","Phim ảnh"],[42,"Theater","Nhà hát"]]},
+  {d:"02/07",t:[[43,"Music","Âm nhạc"],[44,"Museums","Bảo tàng"]]},
+  {d:"03/07",t:[[45,"Media","Truyền thông"],[46,"Doctor's Office","Phòng khám bác sĩ"]]},
+  {d:"04/07",t:[[47,"Dentist's Office","Phòng khám nha khoa"],[48,"Health Insurance","Bảo hiểm y tế"]]},
+  {d:"05/07",t:[[49,"Hospitals","Bệnh viện"],[50,"Pharmacy","Hiệu thuốc"]]}
+];
+var done=new Set();
+try{var s=localStorage.getItem('toeic_v1');if(s)done=new Set(JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem('toeic_v1',JSON.stringify([...done]));}catch(e){}}
+function stats(){var n=done.size;document.getElementById('tt-d').textContent=n;document.getElementById('tt-l').textContent=50-n;document.getElementById('tt-p').textContent=Math.round(n/50*100)+'%';document.getElementById('tt-bar').style.width=(n/50*100)+'%';}
+function toggle(n){if(done.has(n))done.delete(n);else done.add(n);save();var c=document.getElementById('c'+n),i=document.getElementById('i'+n);if(done.has(n)){c.classList.add('done');i.textContent='✓';}else{c.classList.remove('done');i.textContent=n;}stats();}
+function ttReset(){if(!confirm('Đặt lại toàn bộ?'))return;done.clear();save();for(var i=1;i<=50;i++){var c=document.getElementById('c'+i),ic=document.getElementById('i'+i);if(c){c.classList.remove('done');ic.textContent=i;}}stats();}
+var today=new Date();var td=(today.getDate()<10?'0':'')+today.getDate()+'/'+(today.getMonth()<9?'0':'')+(today.getMonth()+1);
+var html='';
+D.forEach(function(day){
+  var isTd=day.d===td;
+  html+='<div class="tt-dlabel">'+(isTd?'📍 ':'')+day.d+(isTd?' · <span style="color:#1D9E75">Hôm nay</span>':'')+'</div><div class="tt-grid">';
+  day.t.forEach(function(t){
+    var n=t[0],isDone=done.has(n);
+    html+='<div class="tt-card'+(isDone?' done':'')+'" id="c'+n+'" onclick="toggle('+n+')" tabindex="0">'+
+      '<div class="tt-num" id="i'+n+'">'+(isDone?'✓':n)+'</div>'+
+      '<div><div class="tt-en">'+t[1]+'</div><div class="tt-vn">'+t[2]+'</div></div>'+
+      '</div>';
+  });
+  html+='</div>';
+});
+document.getElementById('tt-body').innerHTML=html;
+stats();
+</script>
